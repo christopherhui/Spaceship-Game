@@ -11,7 +11,7 @@ RED = (255, 100, 100)
 GREEN = (100, 255, 100)
 
 
-WIDTH = 1000
+WIDTH = 900
 HEIGHT = 600
 FPS = 60
 pygame.display.set_caption('Spaceship Game')
