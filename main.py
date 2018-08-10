@@ -1,4 +1,4 @@
-import pygame, sys, time
+import pygame, sys
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -17,13 +17,7 @@ FPS = 60
 pygame.display.set_caption('Spaceship Game')
 
 background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
-
-spaceship_width = 150
-spaceship_height = 150
-spaceship_speed = 10
-
-loadSpaceShip = pygame.image.load('spaceship.png')
-spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
+background.fill(WHITE)
 
 def main():
     x_start = (WIDTH * 0.5) - spaceship_width / 2
@@ -68,14 +62,12 @@ def main():
         pygame.display.update()
         clock.tick(FPS)
 
-def getBackground():
-    backgroundImg = pygame.image.load('backgroundSpace.png')
-    rect = backgroundImg.get_rect()
-    rect.left, rect.top = (0, 0)
-    background.blit(backgroundImg, rect)
 
 def changeImg(x, y):
     background.blit(spaceShip, (x, y))
+
+def genSpaceShip():
+
 
 main()
 
