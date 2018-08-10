@@ -17,7 +17,18 @@ FPS = 60
 pygame.display.set_caption('Spaceship Game')
 
 background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
-background.fill(WHITE)
+
+class Spaceship(pygame.sprite.Sprite):
+    def __init__(self, color, width, height):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.Surface([width, height])
+        self.image.fill(color)
+
+        self.image.set_colorkey(WHITE)
+
+        pygame.draw.rect()
+
 
 def main():
     x_start = (WIDTH * 0.5) - spaceship_width / 2
@@ -56,7 +67,7 @@ def main():
         x += x_change
         y += y_change
 
-        getBackground()
+        background.fill(WHITE)
         changeImg(x, y)
 
         pygame.display.update()
@@ -65,9 +76,6 @@ def main():
 
 def changeImg(x, y):
     background.blit(spaceShip, (x, y))
-
-def genSpaceShip():
-
 
 main()
 
