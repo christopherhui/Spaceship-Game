@@ -49,6 +49,10 @@ def main():
                 pygame.quit()
                 quit()
 
+            if event.type == pygame.KEYUP:
+                if event.type == pygame.K_UP or pygame.K_a:
+
+
         sprite_list.draw(background)
         pygame.display.update()
 
