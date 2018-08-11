@@ -22,6 +22,7 @@ background.fill(WHITE)
 # Spaceship parameters:
 width = 40
 height = 40
+speed = 5
 
 # Init. Boxes
 class Boxes(pygame.sprite.Sprite):
@@ -38,11 +39,15 @@ def main():
     top_corner = [WIDTH / 2, HEIGHT - height - 10]
     left_corner = [WIDTH / 2 - width / 2, HEIGHT - 10]
     right_corner = [WIDTH / 2 + width / 2, HEIGHT - 10]
-    pygame.draw.polygon(background, BLACK, [top_corner, left_corner, right_corner])
+
+    # states of movement
+    move_ver = 0
+    move_hor = 0
 
     # initializes sprite list
     sprite_list = pygame.sprite.Group()
 
+    # starts main loop
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -50,10 +55,37 @@ def main():
                 quit()
 
             if event.type == pygame.KEYUP:
-                if event.type == pygame.K_UP or pygame.K_a:
+                if event.type == pygame.K_UP or pygame.K_w:
+                    move_ver += 5
+                elif event.type == pygame.K_DOWN or pygame.K_s:
+                    move_ver += -5
+                elif event.type == pygame.K_LEFT or pygame.K_a:
+                    move_hor += -5
+                elif event.type == pygame.K_RIGHT or pygame.K_d:
+                    move_hor += 5
 
+            if event.type == pygame.KEYDOWN:
+                if event.type == pygame.K_UP or pygame.K_w:
+                    move_ver += -5
+                elif event.type == pygame.K_DOWN or pygame.K_s:
+                    move_ver += 5
+                elif event.type == pygame.K_LEFT or pygame.K_a:
+                    move_hor += 5
+                elif event.type == pygame.K_RIGHT or pygame.K_d:
+                    move_hor += -5
 
+        # changes spaceship movements
+        top_corner[0] += move_hor
+        left_corner[0] += move_hor
+        right_corner[0] += move_hor
+        top_corner[1] += move_ver
+        left_corner[1] += move_ver
+        right_corner[1] += move_ver
+
+        pygame.draw.polygon(background, BLACK, [top_corner, left_corner, right_corner])
         sprite_list.draw(background)
+
         pygame.display.update()
+        clock.tick(FPS)
 
 main()
