@@ -45,31 +45,35 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    x_change = spaceship_speed
+                    x_change += spaceship_speed
                 elif event.key == pygame.K_LEFT:
-                    x_change = -spaceship_speed
+                    x_change += -spaceship_speed
                 elif event.key == pygame.K_UP:
-                    y_change = -spaceship_speed
+                    y_change += -spaceship_speed
                 elif event.key == pygame.K_DOWN:
-                    y_change = spaceship_speed
+                    y_change += spaceship_speed
 
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    x_change = 0
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    y_change = 0
+                if event.key == pygame.K_RIGHT:
+                    x_change += -spaceship_speed
+                elif event.key == pygame.K_LEFT:
+                    x_change += spaceship_speed
+                elif event.key == pygame.K_UP:
+                    y_change += spaceship_speed
+                elif event.key == pygame.K_DOWN:
+                    y_change += -spaceship_speed
 
         x += x_change
         y += y_change
 
-        getBackground()
+        background.fill(WHITE)
         changeImg(x, y)
 
         pygame.display.update()
         clock.tick(FPS)
 
 def getBackground():
-    backgroundImg = pygame.image.load('backgroundSpace.png')
+    backgroundImg = pygame.image.load('clouds.jpg')
     rect = backgroundImg.get_rect()
     rect.left, rect.top = (0, 0)
     background.blit(backgroundImg, rect)
