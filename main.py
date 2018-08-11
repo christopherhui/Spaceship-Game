@@ -10,7 +10,7 @@ BLUE = (100, 100, 255)
 RED = (255, 100, 100)
 GREEN = (100, 255, 100)
 
-
+# Background parameters:
 WIDTH = 1000
 HEIGHT = 600
 FPS = 60
@@ -19,24 +19,29 @@ pygame.display.set_caption('Spaceship Game')
 background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 background.fill(WHITE)
 
-# Init. Spaceship
-class Spaceship(pygame.sprite.Sprite):
+# Spaceship parameters:
+width = 40
+height = 40
+
+# Init. Boxes
+class Boxes(pygame.sprite.Sprite):
     def __init__(self, color, width, height):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
 
-        pygame.draw.polygon(self.image, color, [[WIDTH / 2, HEIGHT - height],[WIDTH / 2 - width / 2, HEIGHT],[WIDTH / 2 + width / 2, HEIGHT]])
-
-    def drawShip(self):
-        ship_list = pygame.sprite.Group()
-        ship_list.add(self)
-        ship_list.draw(background)
+        self.rect = self.image.get_rect()
 
 def main():
-    a = Spaceship(BLUE, 100, 100)
-    a.drawShip()
+    # draws initial pos. of spaceship
+    top_corner = [WIDTH / 2, HEIGHT - height - 10]
+    left_corner = [WIDTH / 2 - width / 2, HEIGHT - 10]
+    right_corner = [WIDTH / 2 + width / 2, HEIGHT - 10]
+    pygame.draw.polygon(background, BLACK, [top_corner, left_corner, right_corner])
+
+    # initializes sprite list
+    sprite_list = pygame.sprite.Group()
 
     while True:
         for event in pygame.event.get():
@@ -44,6 +49,7 @@ def main():
                 pygame.quit()
                 quit()
 
+        sprite_list.draw(background)
         pygame.display.update()
 
 main()
