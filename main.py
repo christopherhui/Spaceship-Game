@@ -18,11 +18,11 @@ pygame.display.set_caption('Spaceship Game')
 
 background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 
-spaceship_width = 150
-spaceship_height = 150
-spaceship_speed = 10
+spaceship_width = 50
+spaceship_height = 50
+spaceship_speed = 5
 
-loadSpaceShip = pygame.image.load('spaceship.png')
+loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
 
 def main():
