@@ -77,11 +77,18 @@ def main():
         x += x_change
         y += y_change
 
+        # takes the boundaries of each of the game's WIDTH and HEIGHT
         if x + spaceship_width < 0:
             x = WIDTH + spaceship_width
 
         if x > WIDTH + spaceship_width:
             x = -spaceship_width
+
+        if y + spaceship_height < 0:
+            y = HEIGHT
+
+        if y > HEIGHT:
+            y = -spaceship_height
 
         background.fill(WHITE)
         changeImg(x, y)
