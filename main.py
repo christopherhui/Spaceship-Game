@@ -50,6 +50,7 @@ def main():
     y_change = 0
 
     while True:
+        background.fill(WHITE)
         # time taken for blocks to spawn
         wait_time = 5
         block_sprites = pygame.sprite.Group()
@@ -98,7 +99,6 @@ def main():
         if y > HEIGHT:
             y = -spaceship_height
 
-        background.fill(WHITE)
         changeImg(x, y)
 
         pygame.display.update()
