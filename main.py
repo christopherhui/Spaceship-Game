@@ -1,4 +1,4 @@
-import pygame, sys, time
+import pygame, sys, time, random
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -46,6 +46,9 @@ def main():
     y_change = 0
 
     while True:
+        # time taken for blocks to spawn
+        wait_time = 5
+
 
         # event types for controlling spaceship
         for event in pygame.event.get():
@@ -104,6 +107,11 @@ def getBackground():
 
 def changeImg(x, y):
     background.blit(spaceShip, (x, y))
+
+def genBlocks(wait):
+    block_sprites = pygame.sprite.Group()
+    block_sprites.add()
+
 
 main()
 
