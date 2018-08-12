@@ -80,6 +80,9 @@ def main():
         if x + spaceship_width < 0:
             x = WIDTH + spaceship_width
 
+        if x > WIDTH + spaceship_width:
+            x = -spaceship_width
+
         background.fill(WHITE)
         changeImg(x, y)
 
