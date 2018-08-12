@@ -25,18 +25,29 @@ spaceship_speed = 5
 loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
 
+# initialize class for blocks:
+class Block(pygame.sprite.Sprite):
+    def __init__(self, color, width, height):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.Surface([width, height])
+        self.image.fill(color)
+
+        self.rect = self.image.get_rect()
+
 def main():
+    # get x and y values of sprite image
     x_start = (WIDTH * 0.5) - spaceship_width / 2
     y_start = HEIGHT * 3/4
 
     x = x_start
     y = y_start
-
     x_change = 0
     y_change = 0
 
     while True:
 
+        # event types for controlling spaceship
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -65,6 +76,9 @@ def main():
 
         x += x_change
         y += y_change
+
+        if x + spaceship_width < 0:
+            x = WIDTH + spaceship_width
 
         background.fill(WHITE)
         changeImg(x, y)
