@@ -35,6 +35,10 @@ class Block(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
+    def initPos(self):
+        self.rect.x = random.randrange(WIDTH - self.width)
+        self.rect.y = random.randrange(HEIGHT - self.height)
+
 def main():
     # get x and y values of sprite image
     x_start = (WIDTH * 0.5) - spaceship_width / 2
@@ -48,7 +52,8 @@ def main():
     while True:
         # time taken for blocks to spawn
         wait_time = 5
-
+        block_sprites = pygame.sprite.Group()
+        genBlocks(wait_time, block_sprites)
 
         # event types for controlling spaceship
         for event in pygame.event.get():
@@ -108,10 +113,10 @@ def getBackground():
 def changeImg(x, y):
     background.blit(spaceShip, (x, y))
 
-def genBlocks(wait):
-    block_sprites = pygame.sprite.Group()
-    block_sprites.add()
-
+def genBlocks(wait, block_sprites):
+    aBlock = Block(BLACK, 50, 50)
+    block_sprites.add(aBlock)
+    block_sprites.draw(background)
 
 main()
 
