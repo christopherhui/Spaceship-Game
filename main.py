@@ -40,11 +40,15 @@ class Block(pygame.sprite.Sprite):
 
     def initPos(self):
         self.rect.x = random.randrange(WIDTH - self.width)
-        self.rect.y = random.randrange(- HEIGHT * 1/4, -self.height)
+        self.rect.y = - HEIGHT * 1/4
 
     def resetPos(self):
         self.rect.x = random.randrange(WIDTH - self.width)
-        self.rect.y = random.randrange(-self.height, 0)
+        self.rect.y = -self.height
+
+    def respawnBlo(self):
+        self.rect.x = random.randrange(WIDTH - self.width)
+        self.rect.y = - HEIGHT * 0.5
 
     def update(self):
         self.rect.y += self.speed
@@ -62,7 +66,7 @@ class Bullet(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
-        self.rect.x = x + spaceship_width / 2
+        self.rect.x = x + spaceship_width / 2 - 2
         self.rect.y = y
 
     def update(self):
@@ -86,6 +90,7 @@ def main():
 
     # bullet group:
     bullet_sprites = pygame.sprite.Group()
+    shoot = False
 
     while True:
         background.fill(WHITE)
@@ -106,8 +111,7 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     y_change += spaceship_speed
                 elif event.key == pygame.K_SPACE:
-                    bullet = Bullet(5, x, y)
-                    bullet_sprites.add(bullet)
+                    spawnBullet(bullet_sprites, x, y)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
@@ -141,6 +145,11 @@ def main():
             if bullet.rect.y < 0:
                 bullet_sprites.remove(bullet)
 
+            block_hit_list = pygame.sprite.spritecollide(bullet, block_sprites, False)
+            for block in block_hit_list:
+                bullet_sprites.remove(bullet)
+                block.respawnBlo()
+
         # bullet updates on screen:
         bullet_sprites.draw(background)
         bullet_sprites.update()
@@ -163,9 +172,13 @@ def changeImg(x, y):
 
 def genBlocks(block_sprites, fall_speed):
     for i in range(5):
-        aBlock = Block(BLACK, 50, 50, fall_speed)
+        aBlock = Block(BLUE, 50, 50, fall_speed)
         block_sprites.add(aBlock)
         aBlock.initPos()
+
+def spawnBullet(bullet_sprites, x, y):
+    bullet = Bullet(5, x, y)
+    bullet_sprites.add(bullet)
 
 main()
 
