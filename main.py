@@ -11,7 +11,7 @@ RED = (255, 100, 100)
 GREEN = (100, 255, 100)
 
 
-WIDTH = 1000
+WIDTH = 400
 HEIGHT = 600
 FPS = 60
 pygame.display.set_caption('Spaceship Game')
@@ -27,8 +27,11 @@ spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_he
 
 # initialize class for blocks:
 class Block(pygame.sprite.Sprite):
-    def __init__(self, color, width, height):
+    def __init__(self, color, width, height, fall_speed):
         pygame.sprite.Sprite.__init__(self)
+        self.width = width
+        self.height = height
+        self.speed = fall_speed
 
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
@@ -37,7 +40,18 @@ class Block(pygame.sprite.Sprite):
 
     def initPos(self):
         self.rect.x = random.randrange(WIDTH - self.width)
-        self.rect.y = random.randrange(HEIGHT - self.height)
+        self.rect.y = random.randrange(- HEIGHT * 1/4, -self.height)
+
+    def resetPos(self):
+        self.rect.x = random.randrange(WIDTH - self.width)
+        self.rect.y = random.randrange(-self.height, 0)
+
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.y > HEIGHT:
+            self.initPos()
+
+# initialize class for bullets:
 
 def main():
     # get x and y values of sprite image
@@ -49,12 +63,16 @@ def main():
     x_change = 0
     y_change = 0
 
+    wait_time = 5
+    fall_speed = 3
+    block_sprites = pygame.sprite.Group()
+    genBlocks(block_sprites, fall_speed)
+
     while True:
         background.fill(WHITE)
         # time taken for blocks to spawn
-        wait_time = 5
-        block_sprites = pygame.sprite.Group()
-        genBlocks(wait_time, block_sprites)
+        block_sprites.draw(background)
+        block_sprites.update()
 
         # event types for controlling spaceship
         for event in pygame.event.get():
@@ -101,6 +119,7 @@ def main():
 
         changeImg(x, y)
 
+        block_sprites.update()
         pygame.display.update()
         clock.tick(FPS)
 
@@ -113,10 +132,11 @@ def getBackground():
 def changeImg(x, y):
     background.blit(spaceShip, (x, y))
 
-def genBlocks(wait, block_sprites):
-    aBlock = Block(BLACK, 50, 50)
-    block_sprites.add(aBlock)
-    block_sprites.draw(background)
+def genBlocks(block_sprites, fall_speed):
+    for i in range(5):
+        aBlock = Block(BLACK, 50, 50, fall_speed)
+        block_sprites.add(aBlock)
+        aBlock.initPos()
 
 main()
 
