@@ -52,6 +52,21 @@ class Block(pygame.sprite.Sprite):
             self.initPos()
 
 # initialize class for bullets:
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, speed, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = speed
+
+        self.image = pygame.Surface([5, 10])
+        self.image.fill(BLACK)
+
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x + spaceship_width / 2
+        self.rect.y = y
+
+    def update(self):
+        self.rect.y -= self.speed
 
 def main():
     # get x and y values of sprite image
@@ -63,17 +78,17 @@ def main():
     x_change = 0
     y_change = 0
 
+    # creation for blocks
     wait_time = 5
     fall_speed = 3
     block_sprites = pygame.sprite.Group()
     genBlocks(block_sprites, fall_speed)
 
+    # bullet group:
+    bullet_sprites = pygame.sprite.Group()
+
     while True:
         background.fill(WHITE)
-        # time taken for blocks to spawn
-        block_sprites.draw(background)
-        block_sprites.update()
-
         # event types for controlling spaceship
         for event in pygame.event.get():
 
@@ -90,6 +105,9 @@ def main():
                     y_change += -spaceship_speed
                 elif event.key == pygame.K_DOWN:
                     y_change += spaceship_speed
+                elif event.key == pygame.K_SPACE:
+                    bullet = Bullet(5, x, y)
+                    bullet_sprites.add(bullet)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
@@ -119,7 +137,18 @@ def main():
 
         changeImg(x, y)
 
+        for bullet in bullet_sprites:
+            if bullet.rect.y < 0:
+                bullet_sprites.remove(bullet)
+
+        # bullet updates on screen:
+        bullet_sprites.draw(background)
+        bullet_sprites.update()
+
+        # block updates on screen:
+        block_sprites.draw(background)
         block_sprites.update()
+
         pygame.display.update()
         clock.tick(FPS)
 
