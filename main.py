@@ -9,6 +9,7 @@ BLACK = (0, 0, 0)
 BLUE = (100, 100, 255)
 RED = (255, 100, 100)
 GREEN = (100, 255, 100)
+GRAY = (128, 128, 128)
 
 
 WIDTH = 400
@@ -52,8 +53,6 @@ class Block(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.y += self.speed
-        if self.rect.y > HEIGHT:
-            self.initPos()
 
 # initialize class for bullets:
 class Bullet(pygame.sprite.Sprite):
@@ -72,8 +71,20 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.y -= self.speed
 
+class Heart(pygame.sprite.Sprite):
+    def __init__(self, x, y, life):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.life = life
+        self.width = int(WIDTH * 1/10)
+        self.height = int(HEIGHT * 1/10)
+
+        self.image = pygame.image.load('heart.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (self.width, self.width))
+
 def main():
-    # get x and y values of sprite image
+    # get x and y values of spaceship
     x_start = (WIDTH * 0.5) - spaceship_width / 2
     y_start = HEIGHT * 3/4
 
@@ -81,6 +92,7 @@ def main():
     y = y_start
     x_change = 0
     y_change = 0
+    lives = 4
 
     # creation for blocks
     wait_time = 5
@@ -90,7 +102,11 @@ def main():
 
     # bullet group:
     bullet_sprites = pygame.sprite.Group()
-    shoot = False
+
+    # creation for hearts
+    global heart_sprites
+    heart_sprites = pygame.sprite.Group()
+    genHearts(heart_sprites, lives)
 
     while True:
         background.fill(WHITE)
@@ -139,8 +155,10 @@ def main():
         if y > HEIGHT:
             y = -spaceship_height
 
+        # changes player spaceship location
         changeImg(x, y)
 
+        # bullet properties - 1. out of bounds check 2. collision logic on block
         for bullet in bullet_sprites:
             if bullet.rect.y < 0:
                 bullet_sprites.remove(bullet)
@@ -157,6 +175,16 @@ def main():
         # block updates on screen:
         block_sprites.draw(background)
         block_sprites.update()
+
+        for block in block_sprites:
+            if block.rect.y > HEIGHT:
+                block.initPos()
+                reduceLife(lives)
+                lives -= 1
+
+        # heart sprites for lives:
+        for heart in heart_sprites:
+            pygame.Surface.blit(background, heart.image, (heart.x, heart.y))
 
         pygame.display.update()
         clock.tick(FPS)
@@ -180,6 +208,20 @@ def spawnBullet(bullet_sprites, x, y):
     bullet = Bullet(5, x, y)
     bullet_sprites.add(bullet)
 
-main()
+def genHearts(heart_sprites, lives):
+    for i in range(lives):
+        if i == 0:
+            heart = Heart(10, 0, i + 1)
+        else:
+            heart = Heart(10 + (i * WIDTH * 1/10) + i * WIDTH * 1/30, 0, i + 1)
+        heart_sprites.add(heart)
+
+def reduceLife(lives):
+    for heart in heart_sprites:
+        if heart.life == lives:
+            heart_sprites.remove(heart)
+
+if __name__ == '__main__':
+    main()
 
 
