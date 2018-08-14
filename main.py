@@ -39,15 +39,15 @@ class Block(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
-    def initPos(self):
+    def init_pos(self):
         self.rect.x = random.randrange(WIDTH - self.width)
         self.rect.y = - HEIGHT * 1/4
 
-    def resetPos(self):
+    def reset_pos(self):
         self.rect.x = random.randrange(WIDTH - self.width)
         self.rect.y = -self.height
 
-    def respawnBlo(self):
+    def respawn_blo(self):
         self.rect.x = random.randrange(WIDTH - self.width)
         self.rect.y = - HEIGHT * 0.5
 
@@ -98,15 +98,16 @@ def main():
     wait_time = 5
     fall_speed = 3
     block_sprites = pygame.sprite.Group()
-    genBlocks(block_sprites, fall_speed)
+    gen_blocks(block_sprites, fall_speed)
 
     # bullet group:
     bullet_sprites = pygame.sprite.Group()
 
     # creation for hearts
-    global heart_sprites
     heart_sprites = pygame.sprite.Group()
-    genHearts(heart_sprites, lives)
+    gen_hearts(heart_sprites, lives)
+
+    # misc
 
     while True:
         background.fill(WHITE)
@@ -127,7 +128,7 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     y_change += spaceship_speed
                 elif event.key == pygame.K_SPACE:
-                    spawnBullet(bullet_sprites, x, y)
+                    spawn_bullet(bullet_sprites, x, y)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
@@ -156,7 +157,7 @@ def main():
             y = -spaceship_height
 
         # changes player spaceship location
-        changeImg(x, y)
+        change_img(x, y)
 
         # bullet properties - 1. out of bounds check 2. collision logic on block
         for bullet in bullet_sprites:
@@ -166,7 +167,7 @@ def main():
             block_hit_list = pygame.sprite.spritecollide(bullet, block_sprites, False)
             for block in block_hit_list:
                 bullet_sprites.remove(bullet)
-                block.respawnBlo()
+                block.respawn_blo()
 
         # bullet updates on screen:
         bullet_sprites.draw(background)
@@ -178,9 +179,10 @@ def main():
 
         for block in block_sprites:
             if block.rect.y > HEIGHT:
-                block.initPos()
-                reduceLife(lives)
+                block.init_pos()
+                reduce_life(lives, heart_sprites)
                 lives -= 1
+            # TODO add a "game over" option when lives == 0
 
         # heart sprites for lives:
         for heart in heart_sprites:
@@ -189,26 +191,26 @@ def main():
         pygame.display.update()
         clock.tick(FPS)
 
-def getBackground():
+def get_background():
     backgroundImg = pygame.image.load('clouds.jpg')
     rect = backgroundImg.get_rect()
     rect.left, rect.top = (0, 0)
     background.blit(backgroundImg, rect)
 
-def changeImg(x, y):
+def change_img(x, y):
     background.blit(spaceShip, (x, y))
 
-def genBlocks(block_sprites, fall_speed):
+def gen_blocks(block_sprites, fall_speed):
     for i in range(5):
         aBlock = Block(BLUE, 50, 50, fall_speed)
         block_sprites.add(aBlock)
-        aBlock.initPos()
+        aBlock.init_pos()
 
-def spawnBullet(bullet_sprites, x, y):
+def spawn_bullet(bullet_sprites, x, y):
     bullet = Bullet(5, x, y)
     bullet_sprites.add(bullet)
 
-def genHearts(heart_sprites, lives):
+def gen_hearts(heart_sprites, lives):
     for i in range(lives):
         if i == 0:
             heart = Heart(10, 0, i + 1)
@@ -216,7 +218,7 @@ def genHearts(heart_sprites, lives):
             heart = Heart(10 + (i * WIDTH * 1/10) + i * WIDTH * 1/30, 0, i + 1)
         heart_sprites.add(heart)
 
-def reduceLife(lives):
+def reduce_life(lives, heart_sprites):
     for heart in heart_sprites:
         if heart.life == lives:
             heart_sprites.remove(heart)
