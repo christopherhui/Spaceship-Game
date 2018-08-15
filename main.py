@@ -28,7 +28,7 @@ spaceship_width = 50
 spaceship_height = 50
 spaceship_speed = 7
 
-loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
+loadSpaceShip = pygame.image.load('spaceship.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
 
 # hearts dimensions
@@ -113,6 +113,7 @@ def main():
     lives = 5
     level = 1
     score = 0
+    score_threshold = 4
 
     # creation for blocks
     wait_time = 5
@@ -191,6 +192,13 @@ def main():
                 block.respawn_blo()
                 score += 1
 
+        # update level and their respective properties
+        if score > score_threshold:
+            level += 1
+            score_threshold += 10
+            #if fall_speed < 5:
+            #    fall_speed += 0.5
+
         # bullet updates on screen:
         bullet_sprites.draw(background)
         bullet_sprites.update()
@@ -199,19 +207,20 @@ def main():
         block_sprites.draw(background)
         block_sprites.update()
 
+        # block property changes
         for block in block_sprites:
             if block.rect.y > HEIGHT:
                 block.init_pos()
                 reduce_life(lives, heart_sprites)
                 lives -= 1
-            # TODO add a "game over" option when lives == 0
+            block.speed = fall_speed
 
         # heart sprites for lives:
         for heart in heart_sprites:
             pygame.Surface.blit(background, heart.image, (heart.x, heart.y))
 
         # text display
-        health_msg()
+        health_msg(lives)
         level_msg(level)
         score_msg(score)
 
@@ -255,10 +264,14 @@ def text_objects(text, font, color):
     textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
 
-def health_msg():
+def health_msg(lives):
     healthText = pygame.font.Font('freesansbold.ttf', heart_height)
-    TextSurface, TextRect = text_objects("Lives:", healthText, RED)
-    TextRect.center = (health_msg_width, 40)
+    if lives == 0:
+        TextSurface, TextRect = text_objects("Game Over", healthText, RED)
+        TextRect.center = (health_msg_width + 45, 40)
+    else:
+        TextSurface, TextRect = text_objects("Lives:", healthText, RED)
+        TextRect.center = (health_msg_width, 40)
     background.blit(TextSurface, TextRect)
 
 def level_msg(level):
