@@ -28,7 +28,7 @@ spaceship_width = 50
 spaceship_height = 50
 spaceship_speed = 7
 
-loadSpaceShip = pygame.image.load('spaceship.png')
+loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
 
 # hearts dimensions
@@ -198,6 +198,8 @@ def main():
             score_threshold += 10
             #if fall_speed < 5:
             #    fall_speed += 0.5
+            if level <= 10:
+                gen_blocks(block_sprites, fall_speed)
 
         # bullet updates on screen:
         bullet_sprites.draw(background)
@@ -237,10 +239,9 @@ def change_img(x, y):
     background.blit(spaceShip, (x, y))
 
 def gen_blocks(block_sprites, fall_speed):
-    for i in range(5):
-        aBlock = Block(BLUE, 50, 50, fall_speed)
-        block_sprites.add(aBlock)
-        aBlock.init_pos()
+    aBlock = Block(BLUE, 50, 50, fall_speed)
+    block_sprites.add(aBlock)
+    aBlock.init_pos()
 
 def spawn_bullet(bullet_sprites, x, y, bullet_speed):
     bullet = Bullet(bullet_speed, x, y)
