@@ -11,20 +11,26 @@ RED = (255, 100, 100)
 GREEN = (100, 255, 100)
 GRAY = (128, 128, 128)
 
-
-WIDTH = 400
+# Map dimensions and properties
+WIDTH = 600
 HEIGHT = 600
 FPS = 60
 pygame.display.set_caption('Spaceship Game')
 
 background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
+background_colour = WHITE
 
+# Spaceship dimensions and properties
 spaceship_width = 50
 spaceship_height = 50
 spaceship_speed = 5
 
 loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
+
+# hearts dimensions
+heart_width = 40
+heart_height = 40
 
 # initialize class for blocks:
 class Block(pygame.sprite.Sprite):
@@ -71,17 +77,18 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.y -= self.speed
 
+# init. for Heart -- used for tracking health
 class Heart(pygame.sprite.Sprite):
     def __init__(self, x, y, life):
         pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
         self.life = life
-        self.width = int(WIDTH * 1/10)
-        self.height = int(HEIGHT * 1/10)
+        self.width = heart_width
+        self.height = heart_height
 
         self.image = pygame.image.load('heart.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (self.width, self.width))
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
 
 def main():
     # get x and y values of spaceship
@@ -92,7 +99,7 @@ def main():
     y = y_start
     x_change = 0
     y_change = 0
-    lives = 4
+    lives = 5
 
     # creation for blocks
     wait_time = 5
@@ -100,17 +107,20 @@ def main():
     block_sprites = pygame.sprite.Group()
     gen_blocks(block_sprites, fall_speed)
 
-    # bullet group:
+    # bullet properties:
+    bullet_speed = 5
     bullet_sprites = pygame.sprite.Group()
 
     # creation for hearts
     heart_sprites = pygame.sprite.Group()
     gen_hearts(heart_sprites, lives)
 
-    # misc
-
     while True:
-        background.fill(WHITE)
+
+        # background creation and text display
+        background.fill(background_colour)
+        health_msg()
+
         # event types for controlling spaceship
         for event in pygame.event.get():
 
@@ -128,7 +138,7 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     y_change += spaceship_speed
                 elif event.key == pygame.K_SPACE:
-                    spawn_bullet(bullet_sprites, x, y)
+                    spawn_bullet(bullet_sprites, x, y, bullet_speed)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
@@ -206,22 +216,32 @@ def gen_blocks(block_sprites, fall_speed):
         block_sprites.add(aBlock)
         aBlock.init_pos()
 
-def spawn_bullet(bullet_sprites, x, y):
-    bullet = Bullet(5, x, y)
+def spawn_bullet(bullet_sprites, x, y, bullet_speed):
+    bullet = Bullet(bullet_speed, x, y)
     bullet_sprites.add(bullet)
 
 def gen_hearts(heart_sprites, lives):
     for i in range(lives):
         if i == 0:
-            heart = Heart(10, 0, i + 1)
+            heart = Heart(150, 20, i + 1)
         else:
-            heart = Heart(10 + (i * WIDTH * 1/10) + i * WIDTH * 1/30, 0, i + 1)
+            heart = Heart(150 + (i * heart_width * 6/5), 20, i + 1)
         heart_sprites.add(heart)
 
 def reduce_life(lives, heart_sprites):
     for heart in heart_sprites:
         if heart.life == lives:
             heart_sprites.remove(heart)
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, RED)
+    return textSurface, textSurface.get_rect()
+
+def health_msg():
+    healthText = pygame.font.Font('freesansbold.ttf', heart_height)
+    TextSurface, TextRect = text_objects("Lives:", healthText)
+    TextRect.center = (70, 40)
+    background.blit(TextSurface, TextRect)
 
 if __name__ == '__main__':
     main()
