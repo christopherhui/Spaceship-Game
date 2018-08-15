@@ -108,7 +108,6 @@ class Heart(pygame.sprite.Sprite):
 
 def main():
 
-    BackGround = Background('outerspace.jpg', [0,0])
     # get x and y values of spaceship
     x_start = (WIDTH * 0.5) - spaceship_width / 2
     y_start = HEIGHT * 3/4
@@ -139,6 +138,9 @@ def main():
     # creation for hearts
     heart_sprites = pygame.sprite.Group()
     gen_hearts(heart_sprites, lives)
+
+    # create background
+    BackGround = Background('outerspace.jpg', [0,0])
 
     while True:
         # background creation
@@ -251,12 +253,6 @@ def main():
 
         pygame.display.update()
         clock.tick(FPS)
-
-def get_background():
-    backgroundImg = pygame.image.load('clouds.jpg')
-    rect = backgroundImg.get_rect()
-    rect.left, rect.top = (0, 0)
-    screen.blit(backgroundImg, rect)
 
 def change_img(x, y):
     screen.blit(spaceShip, (x, y))
