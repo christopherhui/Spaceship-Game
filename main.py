@@ -40,6 +40,14 @@ health_msg_width = 70
 level_msg_width = WIDTH - 90
 score_msg_width = level_msg_width - 63
 
+# class for background image
+class Background(pygame.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(image_file, location)
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = location
+
 # initialize class for blocks:
 class Block(pygame.sprite.Sprite):
     def __init__(self, color, width, height, fall_speed):
@@ -114,10 +122,12 @@ def main():
     level = 1
     score = 0
     score_threshold = 4
+    score_threshold_incr = score_threshold * 2
+    game_over = False
 
     # creation for blocks
     wait_time = 5
-    fall_speed = 3
+    fall_speed = 2
     block_sprites = pygame.sprite.Group()
     gen_blocks(block_sprites, fall_speed)
 
@@ -140,7 +150,7 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and not game_over:
                 if event.key == pygame.K_RIGHT:
                     x_change += spaceship_speed
                 elif event.key == pygame.K_LEFT:
@@ -152,7 +162,7 @@ def main():
                 elif event.key == pygame.K_SPACE:
                     spawn_bullet(bullet_sprites, x, y, bullet_speed)
 
-            if event.type == pygame.KEYUP:
+            if event.type == pygame.KEYUP and not game_over:
                 if event.key == pygame.K_RIGHT:
                     x_change += -spaceship_speed
                 elif event.key == pygame.K_LEFT:
@@ -161,6 +171,10 @@ def main():
                     y_change += spaceship_speed
                 elif event.key == pygame.K_DOWN:
                     y_change += -spaceship_speed
+
+        if game_over:
+            x_change = 0
+            y_change = 0
 
         x += x_change
         y += y_change
@@ -195,9 +209,9 @@ def main():
         # update level and their respective properties
         if score > score_threshold:
             level += 1
-            score_threshold += 10
-            #if fall_speed < 5:
-            #    fall_speed += 0.5
+            score_threshold += score_threshold_incr
+            if fall_speed < 5:
+                fall_speed += 0.25
             if level <= 10:
                 gen_blocks(block_sprites, fall_speed)
 
@@ -225,6 +239,9 @@ def main():
         health_msg(lives)
         level_msg(level)
         score_msg(score)
+        if lives <= 0:
+            game_over = True
+            game_over_msg()
 
         pygame.display.update()
         clock.tick(FPS)
@@ -239,7 +256,7 @@ def change_img(x, y):
     background.blit(spaceShip, (x, y))
 
 def gen_blocks(block_sprites, fall_speed):
-    aBlock = Block(BLUE, 50, 50, fall_speed)
+    aBlock = Block(BLACK, 50, 50, fall_speed)
     block_sprites.add(aBlock)
     aBlock.init_pos()
 
@@ -267,9 +284,9 @@ def text_objects(text, font, color):
 
 def health_msg(lives):
     healthText = pygame.font.Font('freesansbold.ttf', heart_height)
-    if lives == 0:
-        TextSurface, TextRect = text_objects("Game Over", healthText, RED)
-        TextRect.center = (health_msg_width + 45, 40)
+    if lives <= 0:
+        TextSurface, TextRect = text_objects("No lives left", healthText, RED)
+        TextRect.center = (health_msg_width + 50, 40)
     else:
         TextSurface, TextRect = text_objects("Lives:", healthText, RED)
         TextRect.center = (health_msg_width, 40)
@@ -286,6 +303,12 @@ def score_msg(score):
     TextSurface, TextRect = text_objects("Score: " + str(score), scoreText, PURPLE)
     TextRect.left = score_msg_width
     TextRect.bottom = 80
+    background.blit(TextSurface, TextRect)
+
+def game_over_msg():
+    gameText = pygame.font.Font('freesansbold.ttf', int(WIDTH / 8))
+    TextSurface, TextRect = text_objects("Game Over", gameText, BLUE)
+    TextRect.center = (WIDTH / 2, HEIGHT / 2)
     background.blit(TextSurface, TextRect)
 
 if __name__ == '__main__':
