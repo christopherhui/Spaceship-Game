@@ -21,15 +21,14 @@ pygame.display.set_caption('Spaceship Game')
 
 assert WIDTH >= 600, 'Map width must be greater than 600'
 
-background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
-background_colour = WHITE
+screen = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 
 # Spaceship dimensions and properties
-spaceship_width = 50
-spaceship_height = 50
+spaceship_width = 100
+spaceship_height = 100
 spaceship_speed = 7
 
-loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
+loadSpaceShip = pygame.image.load('spaceship.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
 
 # hearts dimensions
@@ -45,7 +44,7 @@ score_msg_width = level_msg_width - 63
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_file, location)
+        self.image = pygame.image.load(image_file)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
 
@@ -84,7 +83,7 @@ class Bullet(pygame.sprite.Sprite):
         self.speed = speed
 
         self.image = pygame.Surface([5, 10])
-        self.image.fill(BLACK)
+        self.image.fill(WHITE)
 
         self.rect = self.image.get_rect()
 
@@ -109,6 +108,7 @@ class Heart(pygame.sprite.Sprite):
 
 def main():
 
+    BackGround = Background('outerspace.jpg', [0,0])
     # get x and y values of spaceship
     x_start = (WIDTH * 0.5) - spaceship_width / 2
     y_start = HEIGHT * 3/4
@@ -142,7 +142,8 @@ def main():
 
     while True:
         # background creation
-        background.fill(background_colour)
+        screen.fill(WHITE)
+        screen.blit(BackGround.image, BackGround.rect)
 
         # event types for controlling spaceship
         for event in pygame.event.get():
@@ -218,11 +219,11 @@ def main():
                 gen_blocks(block_sprites, fall_speed, level)
 
         # bullet updates on screen:
-        bullet_sprites.draw(background)
+        bullet_sprites.draw(screen)
         bullet_sprites.update()
 
         # block updates on screen:
-        block_sprites.draw(background)
+        block_sprites.draw(screen)
         block_sprites.update()
 
         # block property changes
@@ -235,7 +236,7 @@ def main():
 
         # heart sprites for lives:
         for heart in heart_sprites:
-            pygame.Surface.blit(background, heart.image, (heart.x, heart.y))
+            pygame.Surface.blit(screen, heart.image, (heart.x, heart.y))
 
         # changes player spaceship location
         change_img(x, y)
@@ -255,19 +256,19 @@ def get_background():
     backgroundImg = pygame.image.load('clouds.jpg')
     rect = backgroundImg.get_rect()
     rect.left, rect.top = (0, 0)
-    background.blit(backgroundImg, rect)
+    screen.blit(backgroundImg, rect)
 
 def change_img(x, y):
-    background.blit(spaceShip, (x, y))
+    screen.blit(spaceShip, (x, y))
 
 def gen_blocks(block_sprites, fall_speed, level):
     if level == 1:
         for i in range(3):
-            aBlock = Block(BLACK, 50, 50, fall_speed)
+            aBlock = Block(LIGHTBLUE, 50, 50, fall_speed)
             block_sprites.add(aBlock)
             aBlock.init_pos()
     else:
-        aBlock = Block(BLACK, 50, 50, fall_speed)
+        aBlock = Block(LIGHTBLUE, 50, 50, fall_speed)
         block_sprites.add(aBlock)
         aBlock.init_pos()
 
@@ -301,20 +302,20 @@ def health_msg(lives):
     else:
         TextSurface, TextRect = text_objects("Lives:", healthText, RED)
         TextRect.center = (health_msg_width, 40)
-    background.blit(TextSurface, TextRect)
+    screen.blit(TextSurface, TextRect)
 
 def level_msg(level):
     levelText = pygame.font.Font('freesansbold.ttf', heart_height)
     TextSurface, TextRect = text_objects("Level: " + str(level), levelText, GREEN)
     TextRect.center = (level_msg_width, 40)
-    background.blit(TextSurface, TextRect)
+    screen.blit(TextSurface, TextRect)
 
 def score_msg(score):
     scoreText = pygame.font.Font('freesansbold.ttf', int(heart_height * 0.5))
     TextSurface, TextRect = text_objects("Score: " + str(score), scoreText, PURPLE)
     TextRect.left = score_msg_width
     TextRect.bottom = 80
-    background.blit(TextSurface, TextRect)
+    screen.blit(TextSurface, TextRect)
 
 def game_over_init(block_sprites):
     game_over_msg()
@@ -326,13 +327,13 @@ def game_over_msg():
     gameText = pygame.font.Font('freesansbold.ttf', int(WIDTH / 8))
     TextSurface, TextRect = text_objects("Game Over", gameText, BLUE)
     TextRect.center = (WIDTH / 2, HEIGHT / 2)
-    background.blit(TextSurface, TextRect)
+    screen.blit(TextSurface, TextRect)
 
 def play_again_msg():
     playText = pygame.font.Font('freesansbold.ttf', int(WIDTH / 24))
     TextSurface, TextRect = text_objects("Press r to play again", playText, LIGHTBLUE)
     TextRect.center = (WIDTH / 2, HEIGHT / 2 + int(WIDTH / 16) + 30)
-    background.blit(TextSurface, TextRect)
+    screen.blit(TextSurface, TextRect)
 
 if __name__ == '__main__':
     main()
