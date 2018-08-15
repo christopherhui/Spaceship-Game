@@ -10,12 +10,15 @@ BLUE = (100, 100, 255)
 RED = (255, 100, 100)
 GREEN = (100, 255, 100)
 GRAY = (128, 128, 128)
+PURPLE = (170, 45, 220)
 
 # Map dimensions and properties
 WIDTH = 600
 HEIGHT = 600
-FPS = 60
+FPS = 70
 pygame.display.set_caption('Spaceship Game')
+
+assert WIDTH >= 600, 'Map width must be greater than 600'
 
 background = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 background_colour = WHITE
@@ -23,14 +26,19 @@ background_colour = WHITE
 # Spaceship dimensions and properties
 spaceship_width = 50
 spaceship_height = 50
-spaceship_speed = 5
+spaceship_speed = 7
 
 loadSpaceShip = pygame.image.load('spaceshiptriangle.png')
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
 
 # hearts dimensions
-heart_width = 40
-heart_height = 40
+heart_width = 35
+heart_height = 35
+
+# text positions
+health_msg_width = 70
+level_msg_width = WIDTH - 90
+score_msg_width = level_msg_width - 63
 
 # initialize class for blocks:
 class Block(pygame.sprite.Sprite):
@@ -91,6 +99,7 @@ class Heart(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
 
 def main():
+
     # get x and y values of spaceship
     x_start = (WIDTH * 0.5) - spaceship_width / 2
     y_start = HEIGHT * 3/4
@@ -99,7 +108,11 @@ def main():
     y = y_start
     x_change = 0
     y_change = 0
+
+    # start misc stuff
     lives = 5
+    level = 1
+    score = 0
 
     # creation for blocks
     wait_time = 5
@@ -108,7 +121,7 @@ def main():
     gen_blocks(block_sprites, fall_speed)
 
     # bullet properties:
-    bullet_speed = 5
+    bullet_speed = 7
     bullet_sprites = pygame.sprite.Group()
 
     # creation for hearts
@@ -116,10 +129,8 @@ def main():
     gen_hearts(heart_sprites, lives)
 
     while True:
-
-        # background creation and text display
+        # background creation
         background.fill(background_colour)
-        health_msg()
 
         # event types for controlling spaceship
         for event in pygame.event.get():
@@ -178,6 +189,7 @@ def main():
             for block in block_hit_list:
                 bullet_sprites.remove(bullet)
                 block.respawn_blo()
+                score += 1
 
         # bullet updates on screen:
         bullet_sprites.draw(background)
@@ -197,6 +209,11 @@ def main():
         # heart sprites for lives:
         for heart in heart_sprites:
             pygame.Surface.blit(background, heart.image, (heart.x, heart.y))
+
+        # text display
+        health_msg()
+        level_msg(level)
+        score_msg(score)
 
         pygame.display.update()
         clock.tick(FPS)
@@ -223,9 +240,9 @@ def spawn_bullet(bullet_sprites, x, y, bullet_speed):
 def gen_hearts(heart_sprites, lives):
     for i in range(lives):
         if i == 0:
-            heart = Heart(150, 20, i + 1)
+            heart = Heart(health_msg_width * 2, 20, i + 1)
         else:
-            heart = Heart(150 + (i * heart_width * 6/5), 20, i + 1)
+            heart = Heart(health_msg_width * 2 + (i * heart_width * 6/5), 20, i + 1)
         heart_sprites.add(heart)
 
 def reduce_life(lives, heart_sprites):
@@ -233,14 +250,28 @@ def reduce_life(lives, heart_sprites):
         if heart.life == lives:
             heart_sprites.remove(heart)
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, RED)
+# text messages for main()
+def text_objects(text, font, color):
+    textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
 
 def health_msg():
     healthText = pygame.font.Font('freesansbold.ttf', heart_height)
-    TextSurface, TextRect = text_objects("Lives:", healthText)
-    TextRect.center = (70, 40)
+    TextSurface, TextRect = text_objects("Lives:", healthText, RED)
+    TextRect.center = (health_msg_width, 40)
+    background.blit(TextSurface, TextRect)
+
+def level_msg(level):
+    levelText = pygame.font.Font('freesansbold.ttf', heart_height)
+    TextSurface, TextRect = text_objects("Level: " + str(level), levelText, GREEN)
+    TextRect.center = (level_msg_width, 40)
+    background.blit(TextSurface, TextRect)
+
+def score_msg(score):
+    scoreText = pygame.font.Font('freesansbold.ttf', int(heart_height * 0.5))
+    TextSurface, TextRect = text_objects("Score: " + str(score), scoreText, PURPLE)
+    TextRect.left = score_msg_width
+    TextRect.bottom = 80
     background.blit(TextSurface, TextRect)
 
 if __name__ == '__main__':
