@@ -7,6 +7,7 @@ clock = pygame.time.Clock()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (100, 100, 255)
+LIGHTBLUE = (190, 210, 252)
 RED = (255, 100, 100)
 GREEN = (100, 255, 100)
 GRAY = (128, 128, 128)
@@ -122,14 +123,14 @@ def main():
     level = 1
     score = 0
     score_threshold = 4
-    score_threshold_incr = score_threshold * 2
+    score_threshold_incr = score_threshold
     game_over = False
 
     # creation for blocks
     wait_time = 5
     fall_speed = 2
     block_sprites = pygame.sprite.Group()
-    gen_blocks(block_sprites, fall_speed)
+    gen_blocks(block_sprites, fall_speed, level)
 
     # bullet properties:
     bullet_speed = 7
@@ -172,6 +173,10 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     y_change += -spaceship_speed
 
+            if event.type == pygame.KEYUP and game_over:
+                if event.key == pygame.K_r:
+                    main()
+
         if game_over:
             x_change = 0
             y_change = 0
@@ -192,9 +197,6 @@ def main():
         if y > HEIGHT:
             y = -spaceship_height
 
-        # changes player spaceship location
-        change_img(x, y)
-
         # bullet properties - 1. out of bounds check 2. collision logic on block
         for bullet in bullet_sprites:
             if bullet.rect.y < 0:
@@ -207,13 +209,13 @@ def main():
                 score += 1
 
         # update level and their respective properties
-        if score > score_threshold:
+        if score >= score_threshold:
             level += 1
-            score_threshold += score_threshold_incr
+            score_threshold += score_threshold_incr * level
             if fall_speed < 5:
                 fall_speed += 0.25
-            if level <= 10:
-                gen_blocks(block_sprites, fall_speed)
+            if level % 3 == 0:
+                gen_blocks(block_sprites, fall_speed, level)
 
         # bullet updates on screen:
         bullet_sprites.draw(background)
@@ -235,13 +237,16 @@ def main():
         for heart in heart_sprites:
             pygame.Surface.blit(background, heart.image, (heart.x, heart.y))
 
+        # changes player spaceship location
+        change_img(x, y)
+
         # text display
         health_msg(lives)
         level_msg(level)
         score_msg(score)
         if lives <= 0:
             game_over = True
-            game_over_msg()
+            game_over_init(block_sprites)
 
         pygame.display.update()
         clock.tick(FPS)
@@ -255,10 +260,16 @@ def get_background():
 def change_img(x, y):
     background.blit(spaceShip, (x, y))
 
-def gen_blocks(block_sprites, fall_speed):
-    aBlock = Block(BLACK, 50, 50, fall_speed)
-    block_sprites.add(aBlock)
-    aBlock.init_pos()
+def gen_blocks(block_sprites, fall_speed, level):
+    if level == 1:
+        for i in range(3):
+            aBlock = Block(BLACK, 50, 50, fall_speed)
+            block_sprites.add(aBlock)
+            aBlock.init_pos()
+    else:
+        aBlock = Block(BLACK, 50, 50, fall_speed)
+        block_sprites.add(aBlock)
+        aBlock.init_pos()
 
 def spawn_bullet(bullet_sprites, x, y, bullet_speed):
     bullet = Bullet(bullet_speed, x, y)
@@ -305,10 +316,22 @@ def score_msg(score):
     TextRect.bottom = 80
     background.blit(TextSurface, TextRect)
 
+def game_over_init(block_sprites):
+    game_over_msg()
+    play_again_msg()
+    for block in block_sprites:
+        block_sprites.remove(block)
+
 def game_over_msg():
     gameText = pygame.font.Font('freesansbold.ttf', int(WIDTH / 8))
     TextSurface, TextRect = text_objects("Game Over", gameText, BLUE)
     TextRect.center = (WIDTH / 2, HEIGHT / 2)
+    background.blit(TextSurface, TextRect)
+
+def play_again_msg():
+    playText = pygame.font.Font('freesansbold.ttf', int(WIDTH / 24))
+    TextSurface, TextRect = text_objects("Press r to play again", playText, LIGHTBLUE)
+    TextRect.center = (WIDTH / 2, HEIGHT / 2 + int(WIDTH / 16) + 30)
     background.blit(TextSurface, TextRect)
 
 if __name__ == '__main__':
