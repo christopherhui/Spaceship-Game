@@ -1,7 +1,5 @@
 #todo add collision logic on spaceship, thus removing losing lives on bottom
 #todo health on both collision particles and enemy blocks
-#todo sprite changes to enemy blocks
-#todo sprite changes to bullets
 #todo explosion sprites
 #todo music and sfx
 #todo powerups
@@ -91,8 +89,8 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
 
-        self.image = pygame.Surface([5, 10])
-        self.image.fill(WHITE)
+        self.image = pygame.image.load("bullet.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (10, 30))
 
         self.rect = self.image.get_rect()
 
