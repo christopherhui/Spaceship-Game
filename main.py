@@ -1,3 +1,12 @@
+#todo add collision logic on spaceship, thus removing losing lives on bottom
+#todo health on both collision particles and enemy blocks
+#todo sprite changes to enemy blocks
+#todo sprite changes to bullets
+#todo explosion sprites
+#todo music and sfx
+#todo powerups
+#todo main menu and shop screen
+
 import pygame, sys, time, random
 
 pygame.init()
@@ -56,8 +65,8 @@ class Block(pygame.sprite.Sprite):
         self.height = height
         self.speed = fall_speed
 
-        self.image = pygame.Surface([width, height])
-        self.image.fill(color)
+        self.image = pygame.image.load("asteroid.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (75, 75))
 
         self.rect = self.image.get_rect()
 
@@ -180,6 +189,7 @@ def main():
                 if event.key == pygame.K_r:
                     main()
 
+        # checks conditions in determining change in position
         if game_over:
             x_change = 0
             y_change = 0
@@ -240,16 +250,19 @@ def main():
         for heart in heart_sprites:
             pygame.Surface.blit(screen, heart.image, (heart.x, heart.y))
 
-        # changes player spaceship location
-        change_img(x, y)
-
         # text display
         health_msg(lives)
         level_msg(level)
         score_msg(score)
+
+        # checks if player loses, init. game_over sequence
         if lives <= 0:
             game_over = True
             game_over_init(block_sprites)
+            change_img(x_start, y_start)
+        else:
+            # changes player spaceship location
+            change_img(x, y)
 
         pygame.display.update()
         clock.tick(FPS)
@@ -294,7 +307,7 @@ def health_msg(lives):
     healthText = pygame.font.Font('freesansbold.ttf', heart_height)
     if lives <= 0:
         TextSurface, TextRect = text_objects("No lives left", healthText, RED)
-        TextRect.center = (health_msg_width + 50, 40)
+        TextRect.center = (health_msg_width + 55, 40)
     else:
         TextSurface, TextRect = text_objects("Lives:", healthText, RED)
         TextRect.center = (health_msg_width, 40)
