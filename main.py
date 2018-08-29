@@ -35,8 +35,15 @@ spaceship_width = 100
 spaceship_height = 100
 spaceship_speed = 7
 
-loadSpaceShip = pygame.image.load('spaceship.png')
+loadSpaceShip = pygame.image.load('spaceship.png').convert_alpha()
 spaceShip = pygame.transform.scale(loadSpaceShip, (spaceship_width, spaceship_height))
+
+# music and sfx
+pygame.mixer.music.load("NoGameNoLife.mp3")
+lasershot = pygame.mixer.Sound("lasershot.wav")
+lasershot.set_volume(1)
+explosion = pygame.mixer.Sound("explosion.wav")
+explosion.set_volume(1)
 
 # hearts dimensions
 heart_width = 35
@@ -51,7 +58,7 @@ score_msg_width = level_msg_width - 63
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_file)
+        self.image = pygame.image.load(image_file).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
 
@@ -149,6 +156,10 @@ def main():
     # create background
     BackGround = Background('outerspace.jpg', [0,0])
 
+    # music play
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(5)
+
     while True:
         # background creation
         screen.fill(WHITE)
@@ -172,6 +183,7 @@ def main():
                     y_change += spaceship_speed
                 elif event.key == pygame.K_SPACE:
                     spawn_bullet(bullet_sprites, x, y, bullet_speed)
+                    lasershot.play()
 
             if event.type == pygame.KEYUP and not game_over:
                 if event.key == pygame.K_RIGHT:
@@ -217,6 +229,7 @@ def main():
             for block in block_hit_list:
                 bullet_sprites.remove(bullet)
                 block.respawn_blo()
+                explosion.play()
                 score += 1
 
         # update level and their respective properties
